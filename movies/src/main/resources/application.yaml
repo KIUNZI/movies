@@ -1,0 +1,51 @@
+quarkus:
+  application:
+    name: movies
+  container-image:
+    group: jasonmarstoncouk
+    name: ${quarkus.application.name}
+    push: false
+    tag: ${quarkus.application.version:latest}
+  datasource:
+    db-kind: mysql
+    devservices:
+      enabled: false
+  http:
+    port: 8080
+    proxy:
+      proxy-address-forwarding: true
+      enable-forwarded-host: true
+      enable-forwarded-prefix: true
+  jib:
+    base-jvm-image: eclipse-temurin@sha256:f10d6259d0798c1e12179b6bf3b63cea0d6843f7b09c9f9c9c422c50e44379ec
+    base-registry-username: jasonmarstoncouk
+  native:
+    additional-build-args:
+      - --initialize-at-run-time=org.modelmapper.internal.bytebuddy.utility.RandomString
+      - --initialize-at-run-time=org.modelmapper.internal.bytebuddy.NamingStrategy$SuffixingRandom
+      - --initialize-at-run-time=org.modelmapper.internal.bytebuddy.ByteBuddy
+      - --initialize-at-run-time=org.modelmapper.internal.ProxyFactory
+      - --initialize-at-run-time=org.modelmapper.internal.PropertyReferenceCollector
+      - --trace-object-instantiation=java.util.Random
+  oidc:
+    application-type: web_app
+    authentication:
+      force-redirect-https-scheme: true
+      pkce-required: true
+      redirect-path: /signin-oidc
+      restore-path-after-redirect: true
+    token-state-manager:
+      encryption-required: true
+
+"%dev":
+  quarkus:
+    hibernate-orm:
+      schema-management:
+        strategy: none
+    liquibase:
+      enabled: true
+      migrate-at-start: true
+      change-log: db/changelog/db.changelog-master.yaml
+    oidc:
+      roles:
+        role-claim-path: roles

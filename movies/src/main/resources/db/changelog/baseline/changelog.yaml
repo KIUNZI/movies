@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1773495197446-1
+      author: jason (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: moviesPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: director
+                  type: VARCHAR(254)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: public_id
+                  type: BINARY(16)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: releasedOn
+                  type: date
+              - column:
+                  constraints:
+                    nullable: false
+                  name: title
+                  type: VARCHAR(254)
+              - column:
+                  name: version
+                  type: BIGINT
+            tableName: movies
+  - changeSet:
+      id: 1773495197446-2
+      author: jason (generated)
+      changes:
+        - addUniqueConstraint:
+            columnNames: public_id
+            constraintName: uk_movies_public_id
+            tableName: movies

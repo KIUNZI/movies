@@ -1,0 +1,20 @@
+FROM liquibase/liquibase:4.26
+
+ARG MYSQL_CONNECTOR_VERSION=9.6.0
+ARG MYSQL_CONNECTOR_JAR=mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar
+
+# Install curl (and ca certs) depending on base OS.
+# liquibase/liquibase images are typically Debian/Ubuntu-based, but this keeps it robust.
+USER root
+RUN (command -v apt-get >/dev/null && apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*) \
+ || (command -v apk >/dev/null && apk add --no-cache curl ca-certificates)
+
+# Download the jar into Liquibase classpath
+RUN curl -fsSL -o /liquibase/lib/mysql-connector-j.jar \
+  "https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/${MYSQL_CONNECTOR_VERSION}/${MYSQL_CONNECTOR_JAR}"
+
+# Optional: show the jar is present (useful for debugging builds)
+RUN ls -l /liquibase/lib | grep -i mysql || true
+
+# Return to the default user used by the base image (often liquibase)
+USER liquibase

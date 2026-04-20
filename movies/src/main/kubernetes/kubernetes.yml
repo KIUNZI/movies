@@ -1,0 +1,116 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: movies-liquibase
+  namespace: application
+spec:
+  ttlSecondsAfterFinished: 600   # keep for 10 minutes
+  backoffLimit: 3
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "application"
+        vault.hashicorp.com/agent-inject-secret-db-creds: "kv-v2/application"
+        vault.hashicorp.com/agent-inject-template-db-creds: |
+          {{- with secret "kv-v2/application" -}}
+          export LIQUIBASE_COMMAND_USERNAME={{ index .Data.data "database.username" }}
+          export LIQUIBASE_COMMAND_PASSWORD={{ index .Data.data "database.password" }}
+          export LIQUIBASE_COMMAND_URL={{ index .Data.data "database.jdbc.url" }}
+          {{- end }}
+    spec:
+      serviceAccountName: application
+      restartPolicy: Never
+      containers:
+        - name: liquibase
+          image: jasonmarstoncouk/liquibase-mysql:4.26
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e              
+              . /vault/secrets/db-creds
+              : "${LIQUIBASE_COMMAND_USERNAME:?missing}"
+              : "${LIQUIBASE_COMMAND_PASSWORD:?missing}"
+              : "${LIQUIBASE_COMMAND_URL:?missing}"
+              liquibase update
+          env:
+            - name: LIQUIBASE_COMMAND_CHANGELOG_FILE
+              value: changelog.yaml
+            - name: LIQUIBASE_SEARCH_PATH
+              value: /liquibase/changelog
+          volumeMounts:
+            - name: changelog
+              mountPath: /liquibase/changelog
+      volumes:
+        - name: changelog
+          configMap:
+            name: movies-liquibase-changelog
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: job-reader
+  namespace: application
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: job-reader-binding
+  namespace: application
+subjects:
+  - kind: ServiceAccount
+    name: application
+roleRef:
+  kind: Role
+  name: job-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies
+  namespace: application
+spec:
+  template:
+    spec:
+      serviceAccountName: application
+      initContainers:
+        - name: wait-for-liquibase
+          image: bitnami/kubectl:1.30
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for Liquibase job movies-liquibase to complete..."
+              kubectl wait \
+                --namespace application \
+                --for=condition=complete \
+                --timeout=20m \
+                job/movies-liquibase
+              echo "Liquibase migration completed successfully."
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: movies
+  namespace: application
+spec:
+  hosts:
+  - movies.application.svc.cluster.local
+  - demo.jasonmarston.co.uk
+  - www.demo.jasonmarston.co.uk
+  gateways:
+  - mesh
+  - application/app-gateway
+  http:
+  - name: movies-route
+    route:
+    - destination:
+        host: movies.application.svc.cluster.local
+        port:
+          number: 80
