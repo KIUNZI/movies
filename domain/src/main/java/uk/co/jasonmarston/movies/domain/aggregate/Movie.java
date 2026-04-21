@@ -2,13 +2,12 @@ package uk.co.jasonmarston.movies.domain.aggregate;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import uk.co.jasonmarston.hexagonal.utility.InvariantValidation;
 import uk.co.jasonmarston.movies.domain.arguments.CreateMovieArgs;
 import uk.co.jasonmarston.movies.domain.arguments.UpdateMovieArgs;
+import uk.co.jasonmarston.movies.domain.validator.Invariants;
+import uk.co.jasonmarston.movies.domain.validator.Preconditions;
 import uk.co.jasonmarston.movies.domain.valueobject.*;
 
 import java.util.UUID;
@@ -16,10 +15,12 @@ import java.util.UUID;
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class  Movie {
     @NotNull
     @Valid
     @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Include
     private PublicId publicId;
     private Long version;
     @NotNull
@@ -33,53 +34,29 @@ public final class  Movie {
     private Director director;
 
     private Movie() {
-        this.publicId = PublicId.of(UUID.randomUUID());
     }
 
-    public Movie(
-            final PublicId publicId,
-            final Long version,
-            final Title title,
-            final ReleaseDate release,
-            final Director director
-    ) {
-        this();
+    private void setPublicId(final PublicId publicId) {
+        Preconditions.requireNonNull(publicId, "publicId must not be null");
+        Invariants.requireNull(this.publicId, "publicId must not change once set");
         this.publicId = publicId;
-        this.version = version;
-        this.title = title;
-        this.release = release;
-        this.director = director;
-        InvariantValidation.INSTANCE.validate(this);
     }
 
     public void update(final UpdateMovieArgs updateMovieArgs) {
+        Preconditions.requireNonNull(updateMovieArgs, "updateMovieArgs must not be null");
         this.title = updateMovieArgs.title();
         this.release = updateMovieArgs.release();
         this.director = updateMovieArgs.director();
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if(this == o) return true;
-        if(!(o instanceof Movie other)) return false;
-        if(this.publicId == null || other.publicId == null) return false;
-        return this.publicId.equals(other.publicId);
-    }
-
-    @Override
-    public int hashCode() {
-        return (this.publicId != null)
-            ? publicId.hashCode()
-            : System.identityHashCode(this);
-    }
-
     public static Movie create(final CreateMovieArgs createMovieArgs) {
-        return new Movie(
-                null,
-                null,
-                createMovieArgs.title(),
-                createMovieArgs.release(),
-                createMovieArgs.director()
-        );
+        Preconditions.requireNonNull(createMovieArgs, "createMovieArgs must not be null");
+        final Movie movie = new Movie();
+        movie.setPublicId(PublicId.of(UUID.randomUUID()));
+        movie.setTitle(createMovieArgs.title());
+        movie.setRelease(createMovieArgs.release());
+        movie.setDirector(createMovieArgs.director());
+        InvariantValidation.INSTANCE.validate(movie);
+        return movie;
     }
 }

@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("../settings-plugin")
+    includeBuild("../kiunzi-settings-plugin")
 }
 
 plugins {
