@@ -7,3 +7,7 @@
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
 
+*.kts linguist-language=Kotlin
+*.kt linguist-language=Kotlin
+*.yaml linguist-language=YAML
+*.yml linguist-language=YAML
