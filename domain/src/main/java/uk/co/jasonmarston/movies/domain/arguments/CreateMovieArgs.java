@@ -20,6 +20,7 @@ import uk.co.jasonmarston.movies.domain.valueobject.Title;
  * @see UpdateMovieArgs
  */
 public record CreateMovieArgs(
+        @NotNull
         @Valid
         Title title,
         @NotNull
