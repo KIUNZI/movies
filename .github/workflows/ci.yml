@@ -63,28 +63,45 @@ jobs:
             **/build/test-results/**
           if-no-files-found: warn
 
+      - name: Configure GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+
       - name: Prepare Pages site
-        if: always()
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           rm -rf _site
           mkdir -p _site/test-report
-          # Copy the Gradle HTML report into a stable location.
-          # For multi-module builds, you may need to adjust this path.
-          cp -R build/reports/tests/test/* _site/test-report/ || true
 
-          # Optional landing page so /<repo>/ has something useful.
           cat > _site/index.html <<'HTML'
           <!doctype html>
           <meta charset="utf-8">
           <title>Build reports</title>
           <h1>Build reports</h1>
           <ul>
-            <li><a href="./test-report/">Gradle test report</a></li>
-          </ul>
           HTML
 
+          report_count=0
+          while IFS= read -r -d '' report_dir; do
+            module_path="${report_dir#./}"
+            module_name="${module_path%%/build/reports/tests/test}"
+            target_dir="_site/test-report/${module_name}"
+
+            mkdir -p "${target_dir}"
+            cp -R "${report_dir}/." "${target_dir}" || true
+
+            printf '  <li><a href="./test-report/%s/">%s</a></li>\n' "${module_name}" "${module_name}" >> _site/index.html
+            report_count=$((report_count + 1))
+          done < <(find . -type d -path '*/build/reports/tests/test' -print0)
+
+          if [ "${report_count}" -eq 0 ]; then
+            echo '  <li>No Gradle HTML test reports were found.</li>' >> _site/index.html
+          fi
+
+          echo '</ul>' >> _site/index.html
+
       - name: Upload Pages artifact
-        if: always()
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site/
@@ -92,7 +109,7 @@ jobs:
   deploy-pages:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: always()
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.build-and-test.result == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
