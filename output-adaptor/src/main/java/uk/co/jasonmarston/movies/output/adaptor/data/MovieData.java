@@ -37,24 +37,38 @@ import uk.co.jasonmarston.movies.output.adaptor.converter.TitleConverter;
 @Setter(AccessLevel.PRIVATE)
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MovieData {
+    /**
+     * Returns the database surrogate identifier.
+     *
+     * @return the database identifier
+     */
+    @Getter(AccessLevel.PUBLIC)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    @Getter(AccessLevel.NONE)
     private Long id;
 
+    /**
+     * Returns the public business identifier.
+     *
+     * @return the public identifier
+     */
+    @Getter(AccessLevel.PUBLIC)
     @NotNull
     @Valid
     @Column(name = "public_id", nullable = false, updatable = false)
-    @Convert(converter = PublicIdConverter.class )
-    @Getter(AccessLevel.NONE)
+    @Convert(converter = PublicIdConverter.class)
     private PublicId publicId;
 
+    /**
+     * Returns the optimistic-locking version.
+     *
+     * @return the current version
+     */
+    @Getter(AccessLevel.PUBLIC)
     @Version
-    @Getter(AccessLevel.NONE)
     private Long version;
 
     @NotNull
@@ -74,31 +88,4 @@ public class MovieData {
     @Column(name = "director", nullable = false, length = 254)
     @Convert(converter = DirectorConverter.class)
     private Director director;
-
-    /**
-     * Returns the database surrogate identifier.
-     *
-     * @return the database identifier
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Returns the public business identifier.
-     *
-     * @return the public identifier
-     */
-    public PublicId getPublicId() {
-        return publicId;
-    }
-
-    /**
-     * Returns the optimistic-locking version.
-     *
-     * @return the current version
-     */
-    public Long getVersion() {
-        return version;
-    }
 }

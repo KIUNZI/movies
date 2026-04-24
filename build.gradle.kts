@@ -26,5 +26,9 @@ subprojects {
             dependsOn("jandex")
         }
     }
+    plugins.withType<JavaPlugin> {
+        tasks.withType<Javadoc>().configureEach {
+            options.memberLevel = JavadocMemberLevel.PUBLIC
+        }
+    }
 }
-
