@@ -27,6 +27,7 @@ jobs:
     env:
       ARTIFACTS_REPO_USER: ${{ secrets.ARTIFACTS_REPO_USER }}
       ARTIFACTS_REPO_TOKEN: ${{ secrets.ARTIFACTS_REPO_TOKEN }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
