@@ -51,7 +51,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build and test (with Build Scan)
-        run: ./gradlew --no-daemon clean build --scan -Dscan.termsOfServiceUrl=https://gradle.com/terms-of-service -Dscan.termsOfServiceAgree=yes
+        run: ./gradlew --no-daemon clean build
 
       - name: Generate Javadocs
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
