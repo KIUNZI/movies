@@ -12,24 +12,10 @@ plugins {
 }
 
 gitOpsPromote {
-    gitOpsRepoDir.set(layout.projectDirectory.dir("../gitops-repo"))
-    appPath.set("apps/kiunzi-movies")
-    devValuesPath.set("apps/kiunzi-movies/env/Dev/values.yaml")
-    preProdValuesPath.set("apps/kiunzi-movies/env/PreProd/values.yaml")
-    prodValuesPath.set("apps/kiunzi-movies/env/Prod/values.yaml")
+    gitOpsRepoDir.set(layout.projectDirectory.dir("../gitops"))
+    appPath.set("apps/movies")
+    devValuesPath.set("apps/movies/env/Dev/values.yaml")
+    preProdValuesPath.set("apps/movies/env/PreProd/values.yaml")
+    prodValuesPath.set("apps/movies/env/Prod/values.yaml")
     gitPush.set(true)
 }
-/*
-subprojects {
-    plugins.withId("org.kordamp.gradle.jandex") {
-        tasks.named("javadoc") {
-            dependsOn("jandex")
-        }
-    }
-    plugins.withType<JavaPlugin> {
-        tasks.withType<Javadoc>().configureEach {
-            options.memberLevel = JavadocMemberLevel.PUBLIC
-        }
-    }
-}
-*/
