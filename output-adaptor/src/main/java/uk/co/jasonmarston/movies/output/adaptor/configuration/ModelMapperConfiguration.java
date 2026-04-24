@@ -7,11 +7,22 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import uk.co.jasonmarston.movies.annotation.PersistenceAwareValidating;
 import uk.co.jasonmarston.movies.output.adaptor.data.MovieData;
+/**
+ * Internal configuration that customizes ModelMapper behavior for persistence updates.
+ *
+ * <p>The configuration prevents identifier and version fields from being overwritten
+ * during {@link MovieData} to {@link MovieData} mapping operations.</p>
+ */
 
 @ApplicationScoped
 class ModelMapperConfiguration {
     private final ModelMapper modelMapper;
 
+    /**
+     * Constructs the model-mapper configuration component.
+     *
+     * @param modelMapper the persistence-aware mapper instance to customize
+     */
     @Inject
     public ModelMapperConfiguration(
             @PersistenceAwareValidating
@@ -20,6 +31,9 @@ class ModelMapperConfiguration {
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Registers mapping rules for persistence-safe entity updates.
+     */
     @PostConstruct
     public void init() {
         modelMapper.addMappings(new PropertyMap<MovieData, MovieData>() {

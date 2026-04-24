@@ -18,12 +18,28 @@ import uk.co.jasonmarston.movies.output.adaptor.repository.MovieRepository;
 
 import java.time.Duration;
 
+/**
+ * Reactive Panache-based implementation of {@link MovieRepository}.
+ *
+ * <p>This repository executes movie persistence operations in reactive transactions,
+ * translates datastore outcomes into domain exceptions, and logs failures with
+ * operation context.</p>
+ *
+ * @see MovieRepository
+ * @see MovieData
+ */
 @ApplicationScoped
 public class SimpleMovieRepository implements
         MovieRepository,
         PanacheRepositoryBase<MovieData,Long> {
     private final ModelMapper modelMapper;
 
+    /**
+     * Constructs the reactive movie repository.
+     *
+     * @param modelMapper the persistence-aware mapper used to copy update values into
+     *                    managed entities
+     */
     @Inject
     public SimpleMovieRepository(
             @PersistenceAwareValidating
@@ -32,6 +48,13 @@ public class SimpleMovieRepository implements
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Persists a new movie row inside a reactive transaction.
+     *
+     * @param movieData the movie data to persist
+     * @return a {@link Uni} that emits the persisted movie data
+     * @throws PersistenceException if persistence fails with a non-runtime cause
+     */
     @Override
     public Uni<MovieData> createMovie(final MovieData movieData) {
         return Panache
@@ -50,6 +73,13 @@ public class SimpleMovieRepository implements
             });
     }
 
+    /**
+     * Loads a movie row by public identifier.
+     *
+     * @param publicId the public identifier of the movie to load
+     * @return a {@link Uni} that emits the loaded movie data
+     * @throws NotFoundException if no movie exists for the supplied identifier
+     */
     @Override
     public Uni<MovieData> readMovie(final PublicId publicId) {
         return Panache
@@ -63,6 +93,14 @@ public class SimpleMovieRepository implements
             );
     }
 
+    /**
+     * Updates an existing movie row after optimistic-locking checks.
+     *
+     * @param movieData the candidate movie data containing updated values and version
+     * @return a {@link Uni} that emits the updated movie data
+     * @throws NotFoundException if no movie exists for the supplied identifier
+     * @throws VersionMismatchException if the supplied version does not match current state
+     */
     @Override
     public Uni<MovieData> updateMovie(final MovieData movieData) {
         return Panache
@@ -86,6 +124,14 @@ public class SimpleMovieRepository implements
             );
     }
 
+    /**
+     * Deletes a movie row by public identifier.
+     *
+     * @param publicId the public identifier of the movie to delete
+     * @return a {@link Uni} that completes when deletion succeeds
+     * @throws NotFoundException if no movie exists for the supplied identifier
+     * @throws DataIntegrityViolationException if delete affects more than one row
+     */
     @Override
     public Uni<Void> deleteMovie(final PublicId publicId) {
         return Panache
@@ -107,6 +153,12 @@ public class SimpleMovieRepository implements
             );
     }
 
+    /**
+     * Logs persistence operation failures with operation and identifier context.
+     *
+     * @param op the persistence operation name
+     * @param id the identifier associated with the failed operation
+     */
     private void logError(
             final String op,
             final Object id

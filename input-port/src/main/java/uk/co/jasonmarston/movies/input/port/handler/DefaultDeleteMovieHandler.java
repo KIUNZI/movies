@@ -10,11 +10,28 @@ import uk.co.jasonmarston.movies.input.port.DeleteMovieHandler;
 import uk.co.jasonmarston.movies.input.port.command.DeleteMovieCommand;
 import uk.co.jasonmarston.movies.output.port.MovieOutputPort;
 
+/**
+ * Default implementation of the delete-movie use case.
+ *
+ * <p>This handler maps the inbound {@link DeleteMovieCommand} to
+ * {@link DeleteMovieArgs} and delegates the delete operation to
+ * {@link MovieOutputPort}.</p>
+ *
+ * @see DeleteMovieHandler
+ * @see MovieOutputPort
+ */
 @ApplicationScoped
 public class DefaultDeleteMovieHandler implements DeleteMovieHandler {
     private final MovieOutputPort movieOutputPort;
     private final ModelMapper modelMapper;
 
+    /**
+     * Constructs the default delete-movie handler.
+     *
+     * @param movieOutputPort the output port used to delete movies
+     * @param modelMapper the validating mapper used to convert commands into domain
+     *                    argument objects
+     */
     @Inject
     public DefaultDeleteMovieHandler(
             final MovieOutputPort movieOutputPort,
@@ -25,6 +42,14 @@ public class DefaultDeleteMovieHandler implements DeleteMovieHandler {
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Deletes the movie described by the supplied command.
+     *
+     * @param deleteMovieCommand the validated command identifying the movie to delete
+     * @return a {@link Uni} that completes when the movie has been deleted
+     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     *         if no movie exists for the supplied identifier
+     */
     @Override
     public Uni<Void> handle(
             final DeleteMovieCommand deleteMovieCommand

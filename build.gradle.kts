@@ -19,3 +19,12 @@ gitOpsPromote {
     prodValuesPath.set("apps/kiunzi-movies/env/Prod/values.yaml")
     gitPush.set(true)
 }
+
+subprojects {
+    plugins.withId("org.kordamp.gradle.jandex") {
+        tasks.named("javadoc") {
+            dependsOn("jandex")
+        }
+    }
+}
+

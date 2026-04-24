@@ -1,3 +1,14 @@
+/**
+ * Declares the input-side use-case contracts for the movie application.
+ *
+ * <p>This module exposes command models, query/view models, handler interfaces, and
+ * their default implementations so transport adapters can invoke application use
+ * cases without depending directly on persistence concerns.</p>
+ *
+ * @see uk.co.jasonmarston.movies.input.port.CreateMovieHandler
+ * @see uk.co.jasonmarston.movies.input.port.command.CreateMovieCommand
+ * @see uk.co.jasonmarston.movies.input.port.handler.DefaultCreateMovieHandler
+ */
 module input.port {
     requires static lombok;
     requires jakarta.cdi;

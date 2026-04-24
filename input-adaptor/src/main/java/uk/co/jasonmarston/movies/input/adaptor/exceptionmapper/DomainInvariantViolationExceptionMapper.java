@@ -8,10 +8,32 @@ import uk.co.jasonmarston.movies.input.adaptor.response.ValidationErrorResponse;
 
 import java.util.List;
 
+/**
+ * Maps {@link DomainInvariantViolationException} instances to HTTP 409 responses
+ * with detailed validation errors.
+ *
+ * <p>Each domain violation is converted into a
+ * {@link ValidationErrorResponse.Violation} entry so clients can identify the field
+ * or property that caused the conflict.</p>
+ *
+ * @see ValidationErrorResponse
+ */
 @Provider
 public class DomainInvariantViolationExceptionMapper
         implements ExceptionMapper<DomainInvariantViolationException> {
 
+    /**
+     * Creates a mapper for domain invariant violations.
+     */
+    public DomainInvariantViolationExceptionMapper() {
+    }
+
+    /**
+     * Converts the supplied domain invariant violation into an HTTP response.
+     *
+     * @param ex the domain invariant violation raised while processing the request
+     * @return an HTTP 409 response containing a {@link ValidationErrorResponse} body
+     */
     @Override
     public Response toResponse(final DomainInvariantViolationException ex) {
         final List<ValidationErrorResponse.Violation> violations = ex

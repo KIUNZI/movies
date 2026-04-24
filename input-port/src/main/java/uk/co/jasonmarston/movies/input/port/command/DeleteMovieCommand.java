@@ -2,11 +2,15 @@ package uk.co.jasonmarston.movies.input.port.command;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import uk.co.jasonmarston.movies.domain.valueobject.Director;
 import uk.co.jasonmarston.movies.domain.valueobject.PublicId;
-import uk.co.jasonmarston.movies.domain.valueobject.ReleaseDate;
-import uk.co.jasonmarston.movies.domain.valueobject.Title;
 
+/**
+ * Command identifying the movie that should be deleted.
+ *
+ * @param publicId the public identifier of the movie to delete
+ * @see uk.co.jasonmarston.movies.input.port.DeleteMovieHandler
+ * @see uk.co.jasonmarston.movies.domain.arguments.DeleteMovieArgs
+ */
 public record DeleteMovieCommand(
         @NotNull
         @Valid

@@ -9,3 +9,4 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("org.modelmapper:modelmapper")
 }
+

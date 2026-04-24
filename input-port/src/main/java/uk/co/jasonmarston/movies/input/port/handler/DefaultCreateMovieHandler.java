@@ -11,11 +11,28 @@ import uk.co.jasonmarston.movies.domain.valueobject.PublicId;
 import uk.co.jasonmarston.movies.input.port.command.CreateMovieCommand;
 import uk.co.jasonmarston.movies.output.port.MovieOutputPort;
 
+/**
+ * Default implementation of the create-movie use case.
+ *
+ * <p>This handler maps the inbound {@link CreateMovieCommand} to
+ * {@link CreateMovieArgs}, creates a validated {@link Movie} aggregate, persists it
+ * through {@link MovieOutputPort}, and returns the assigned {@link PublicId}.</p>
+ *
+ * @see uk.co.jasonmarston.movies.input.port.CreateMovieHandler
+ * @see MovieOutputPort
+ */
 @ApplicationScoped
 public class DefaultCreateMovieHandler implements uk.co.jasonmarston.movies.input.port.CreateMovieHandler {
     private final MovieOutputPort movieOutputPort;
     private final ModelMapper modelMapper;
 
+    /**
+     * Constructs the default create-movie handler.
+     *
+     * @param movieOutputPort the output port used to persist newly created movies
+     * @param modelMapper the validating mapper used to convert commands into domain
+     *                    argument objects
+     */
     @Inject
     public DefaultCreateMovieHandler(
             final MovieOutputPort movieOutputPort,
@@ -26,6 +43,14 @@ public class DefaultCreateMovieHandler implements uk.co.jasonmarston.movies.inpu
         this.modelMapper = modelMapper;
     }
 
+    /**
+     * Creates a new movie from the supplied command.
+     *
+     * @param createMovieCommand the validated command describing the movie to create
+     * @return a {@link Uni} that emits the public identifier of the persisted movie
+     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     *         if the command cannot be converted into a valid aggregate
+     */
     @Override
     public Uni<PublicId> handle(
             final CreateMovieCommand createMovieCommand

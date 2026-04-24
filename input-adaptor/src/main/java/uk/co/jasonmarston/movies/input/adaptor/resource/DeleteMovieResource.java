@@ -14,8 +14,18 @@ import uk.co.jasonmarston.movies.input.port.command.DeleteMovieCommand;
 import java.util.UUID;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 
+
+/**
+ * JAX-RS resource that deletes a movie by its public identifier.
+ *
+ * <p>The resource converts the incoming path parameter into a
+ * {@link uk.co.jasonmarston.movies.input.port.command.DeleteMovieCommand} and
+ * delegates the deletion to the {@link DeleteMovieHandler}.</p>
+ *
+ * @see DeleteMovieHandler
+ * @see uk.co.jasonmarston.movies.input.port.command.DeleteMovieCommand
+ */
 @ApplicationScoped
 @Path("/client-api")
 @Consumes(APPLICATION_JSON)
@@ -25,6 +35,12 @@ import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 public class DeleteMovieResource {
     private final DeleteMovieHandler deleteMovieHandler;
 
+    /**
+     * Constructs a resource that can dispatch delete requests to the delete-movie
+     * handler.
+     *
+     * @param deleteMovieHandler the handler that performs the delete-movie use case
+     */
     @Inject
     public DeleteMovieResource(
             final DeleteMovieHandler deleteMovieHandler
@@ -33,6 +49,15 @@ public class DeleteMovieResource {
         this.deleteMovieHandler = deleteMovieHandler;
     }
 
+    /**
+     * Deletes the movie identified by the supplied public identifier.
+     *
+     * <p>If the path parameter is not a valid UUID string, the returned response uses
+     * HTTP status {@code 400 Bad Request} with an {@link ErrorResponse} body.</p>
+     *
+     * @param publicId the public identifier path parameter supplied by the client
+     * @return a {@link Uni} that emits the HTTP response for the delete operation
+     */
     @DELETE
     @Path("/movie/{publicId}")
     public Uni<Response> deleteMovie(

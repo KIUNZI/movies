@@ -13,6 +13,14 @@ import uk.co.jasonmarston.movies.output.adaptor.converter.PublicIdConverter;
 import uk.co.jasonmarston.movies.output.adaptor.converter.ReleaseDateConverter;
 import uk.co.jasonmarston.movies.output.adaptor.converter.TitleConverter;
 
+/**
+ * Persistence entity representing a movie row in the {@code movies} table.
+ *
+ * <p>This data model stores the persistent representation of a domain movie aggregate,
+ * including optimistic-locking version information and converted value-object fields.</p>
+ *
+ * @see uk.co.jasonmarston.movies.domain.aggregate.Movie
+ */
 @Entity
 @Table(
         name = "movies",
@@ -25,22 +33,28 @@ import uk.co.jasonmarston.movies.output.adaptor.converter.TitleConverter;
                 columnList = "public_id"
         )
 )
-@Getter
+@Getter(AccessLevel.PRIVATE)
+@Setter(AccessLevel.PRIVATE)
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class  MovieData {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class MovieData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
+    @Getter(AccessLevel.NONE)
     private Long id;
 
     @NotNull
     @Valid
     @Column(name = "public_id", nullable = false, updatable = false)
     @Convert(converter = PublicIdConverter.class )
+    @Getter(AccessLevel.NONE)
     private PublicId publicId;
 
     @Version
+    @Getter(AccessLevel.NONE)
     private Long version;
 
     @NotNull
@@ -61,16 +75,30 @@ public class  MovieData {
     @Convert(converter = DirectorConverter.class)
     private Director director;
 
-    @Override
-    public boolean equals(final Object o) {
-        if(this == o) return true;
-        if(!(o instanceof MovieData other)) return false;
-        if(this.id == null || other.id == null) return false;
-        return this.id.equals(other.id);
+    /**
+     * Returns the database surrogate identifier.
+     *
+     * @return the database identifier
+     */
+    public Long getId() {
+        return id;
     }
 
-    @Override
-    public int hashCode() {
-        return (id != null)  ? id.hashCode() : System.identityHashCode(this);
+    /**
+     * Returns the public business identifier.
+     *
+     * @return the public identifier
+     */
+    public PublicId getPublicId() {
+        return publicId;
+    }
+
+    /**
+     * Returns the optimistic-locking version.
+     *
+     * @return the current version
+     */
+    public Long getVersion() {
+        return version;
     }
 }

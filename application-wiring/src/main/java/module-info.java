@@ -1,3 +1,6 @@
+/**
+ * Provides shared annotations and wiring dependencies used across adapters and ports.
+ */
 module application.wiring {
     requires jakarta.cdi;
     requires jakarta.validation;

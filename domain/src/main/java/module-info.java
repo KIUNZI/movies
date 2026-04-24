@@ -1,3 +1,6 @@
+/**
+ * Defines core movie domain models, value objects, commands, and domain exceptions.
+ */
 module domain {
     requires static lombok;
     requires jakarta.validation;
