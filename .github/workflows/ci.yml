@@ -1,9 +1,15 @@
-name: CI
+name: CI (Snapshot Build)
 
 on:
   push:
     branches:
       - main
+    tags-ignore:
+      - '*'
+    paths-ignore:
+      - '.github/**'
+      - '.gitattributes'
+      - '.gitignore'
   pull_request:
   workflow_dispatch:
 
