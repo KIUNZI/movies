@@ -53,6 +53,10 @@ jobs:
       - name: Build and test (with Build Scan)
         run: ./gradlew --no-daemon clean build --scan -Dscan.termsOfServiceUrl=https://gradle.com/terms-of-service -Dscan.termsOfServiceAgree=yes
 
+      - name: Generate Javadocs
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+        run: ./gradlew --no-daemon javadoc
+
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -72,16 +76,18 @@ jobs:
         run: |
           rm -rf _site
           mkdir -p _site/test-report
+          mkdir -p _site/javadocs
 
           cat > _site/index.html <<'HTML'
           <!doctype html>
           <meta charset="utf-8">
           <title>Build reports</title>
           <h1>Build reports</h1>
+          <h2>Test reports</h2>
           <ul>
           HTML
 
-          report_count=0
+          test_report_count=0
           while IFS= read -r -d '' report_dir; do
             module_path="${report_dir#./}"
             module_name="${module_path%%/build/reports/tests/test}"
@@ -91,11 +97,33 @@ jobs:
             cp -R "${report_dir}/." "${target_dir}" || true
 
             printf '  <li><a href="./test-report/%s/">%s</a></li>\n' "${module_name}" "${module_name}" >> _site/index.html
-            report_count=$((report_count + 1))
+            test_report_count=$((test_report_count + 1))
           done < <(find . -type d -path '*/build/reports/tests/test' -print0)
 
-          if [ "${report_count}" -eq 0 ]; then
+          if [ "${test_report_count}" -eq 0 ]; then
             echo '  <li>No Gradle HTML test reports were found.</li>' >> _site/index.html
+          fi
+
+          echo '</ul>' >> _site/index.html
+
+          echo '<h2>Javadocs</h2>' >> _site/index.html
+          echo '<ul>' >> _site/index.html
+
+          javadoc_count=0
+          while IFS= read -r -d '' javadoc_dir; do
+            module_path="${javadoc_dir#./}"
+            module_name="${module_path%%/build/docs/javadoc}"
+            target_dir="_site/javadocs/${module_name}"
+
+            mkdir -p "${target_dir}"
+            cp -R "${javadoc_dir}/." "${target_dir}" || true
+
+            printf '  <li><a href="./javadocs/%s/">%s</a></li>\n' "${module_name}" "${module_name}" >> _site/index.html
+            javadoc_count=$((javadoc_count + 1))
+          done < <(find . -type d -path '*/build/docs/javadoc' -print0)
+
+          if [ "${javadoc_count}" -eq 0 ]; then
+            echo '  <li>No Javadoc output was found.</li>' >> _site/index.html
           fi
 
           echo '</ul>' >> _site/index.html
