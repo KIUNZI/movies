@@ -15,6 +15,8 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -61,3 +63,40 @@ jobs:
             **/build/test-results/**
           if-no-files-found: warn
 
+      - name: Prepare Pages site
+        if: always()
+        run: |
+          rm -rf _site
+          mkdir -p _site/test-report
+          # Copy the Gradle HTML report into a stable location.
+          # For multi-module builds, you may need to adjust this path.
+          cp -R build/reports/tests/test/* _site/test-report/ || true
+
+          # Optional landing page so /<repo>/ has something useful.
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>Build reports</title>
+          <h1>Build reports</h1>
+          <ul>
+            <li><a href="./test-report/">Gradle test report</a></li>
+          </ul>
+          HTML
+
+      - name: Upload Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site/
+
+  deploy-pages:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
