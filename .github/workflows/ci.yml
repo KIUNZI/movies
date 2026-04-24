@@ -49,17 +49,17 @@ jobs:
       - name: Ensure Gradle wrapper is executable
         run: chmod +x ./gradlew
 
-      - name: Build and test (with Build Scan)
-        run: ./gradlew --no-daemon clean build
+      - name: Build, test, and generate Javadocs
+        run: ./gradlew --no-daemon clean build javadoc
 
-      - name: Upload test reports
+      - name: Upload reports and docs for Pages
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gradle-test-reports
+          name: reports-and-docs
           path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
+            **/build/reports/tests/test/**
+            **/build/docs/javadoc/**
           if-no-files-found: warn
 
   publish-pages:
@@ -81,26 +81,11 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - name: Download reports and docs
+        uses: actions/download-artifact@v4
         with:
-          distribution: temurin
-          java-version: '25'
-
-      - name: Set up Gradle cache
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Ensure Gradle wrapper is executable
-        run: chmod +x ./gradlew
-
-      - name: Build and generate test reports
-        run: ./gradlew --no-daemon build
-
-      - name: Generate Javadocs
-        run: ./gradlew --no-daemon javadoc
+          name: reports-and-docs
+          path: _input
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
@@ -150,9 +135,9 @@ jobs:
             <ul class="card-grid">
           HTML
 
-          find . -type d -path '*/build/reports/tests/test' -print0 |
+          find _input -type d -path '*/build/reports/tests/test' -print0 |
           while IFS= read -r -d '' report_dir; do
-            module="${report_dir#./}"
+            module="${report_dir#_input/}"
             module="${module%%/build/reports/tests/test}"
             mkdir -p "_site/test-report/$module"
             cp -R "$report_dir/." "_site/test-report/$module" || true
@@ -176,9 +161,9 @@ jobs:
             <ul class="card-grid">
           HTML
 
-          find . -type d -path '*/build/docs/javadoc' -print0 |
+          find _input -type d -path '*/build/docs/javadoc' -print0 |
           while IFS= read -r -d '' doc_dir; do
-            module="${doc_dir#./}"
+            module="${doc_dir#_input/}"
             module="${module%%/build/docs/javadoc}"
             mkdir -p "_site/javadocs/$module"
             cp -R "$doc_dir/." "_site/javadocs/$module" || true
