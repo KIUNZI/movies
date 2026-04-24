@@ -14,9 +14,9 @@ buildscript {
 }
 
 val quarkusProfile = providers.configString("quarkus.profile", true).orElse("dev")
-val dbUsername = providers.configString("QUARKUS_DATASOURCE_USERNAME")
-val dbPassword = providers.configString("QUARKUS_DATASOURCE_PASSWORD")
-val dbUrl = providers.configString("QUARKUS_DATASOURCE_JDBC_URL")
+val dbUsername = providers.configString("quarkus.datasource.username")
+val dbPassword = providers.configString("quarkus.datasource.password")
+val dbUrl = providers.configString("quarkus.datasource.jdbc.url")
 
 dependencies {
     implementation(project(":input-adaptor"))
