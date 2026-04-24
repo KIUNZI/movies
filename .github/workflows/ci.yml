@@ -2,10 +2,8 @@ name: CI (Snapshot Build)
 
 on:
   push:
-    branches:
-      - main
-    tags-ignore:
-      - '*'
+    branches: [ main ]
+    tags-ignore: [ '*' ]
     paths-ignore:
       - '.github/**'
       - '.gitattributes'
@@ -26,6 +24,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     env:
       ARTIFACTS_REPO_USER: ${{ secrets.ARTIFACTS_REPO_USER }}
       ARTIFACTS_REPO_TOKEN: ${{ secrets.ARTIFACTS_REPO_TOKEN }}
@@ -53,10 +52,6 @@ jobs:
       - name: Build and test (with Build Scan)
         run: ./gradlew --no-daemon clean build
 
-      - name: Generate Javadocs
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        run: ./gradlew --no-daemon javadoc
-
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -67,81 +62,131 @@ jobs:
             **/build/test-results/**
           if-no-files-found: warn
 
+  publish-pages:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    if: >
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && github.ref == 'refs/heads/main'
+      && needs.build-and-test.result == 'success'
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Set up Gradle cache
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Ensure Gradle wrapper is executable
+        run: chmod +x ./gradlew
+
+      - name: Generate Javadocs
+        run: ./gradlew --no-daemon javadoc
+
       - name: Configure GitHub Pages
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v5
 
       - name: Prepare Pages site
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         run: |
           rm -rf _site
-          mkdir -p _site/test-report
-          mkdir -p _site/javadocs
+          mkdir -p _site/test-report _site/javadocs
 
+          # Write polished index.html
           cat > _site/index.html <<'HTML'
           <!doctype html>
+          <html lang="en">
           <meta charset="utf-8">
-          <title>Build reports</title>
-          <h1>Build reports</h1>
-          <h2>Test reports</h2>
-          <ul>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Build Reports</title>
+          <link rel="stylesheet" href="./style.css">
+
+          <header class="page-header">
+            <h1>Build Reports</h1>
+            <p class="subtitle">CI artefacts generated from <strong>main</strong></p>
+          </header>
+
+          <main class="container">
+
+          <section>
+            <h2>Test Reports</h2>
+            <ul class="card-grid">
           HTML
 
-          test_report_count=0
+          find . -type d -path '*/build/reports/tests/test' -print0 |
           while IFS= read -r -d '' report_dir; do
-            module_path="${report_dir#./}"
-            module_name="${module_path%%/build/reports/tests/test}"
-            target_dir="_site/test-report/${module_name}"
+            module="${report_dir#./}"
+            module="${module%%/build/reports/tests/test}"
+            mkdir -p "_site/test-report/$module"
+            cp -R "$report_dir/." "_site/test-report/$module" || true
 
-            mkdir -p "${target_dir}"
-            cp -R "${report_dir}/." "${target_dir}" || true
+            cat >> _site/index.html <<HTML
+              <li class="card">
+                <a href="./test-report/$module/">
+                  <span class="card-title">$module</span>
+                  <span class="card-meta">JUnit test report</span>
+                </a>
+              </li>
+          HTML
+          done
 
-            printf '  <li><a href="./test-report/%s/">%s</a></li>\n' "${module_name}" "${module_name}" >> _site/index.html
-            test_report_count=$((test_report_count + 1))
-          done < <(find . -type d -path '*/build/reports/tests/test' -print0)
+          cat >> _site/index.html <<'HTML'
+            </ul>
+          </section>
 
-          if [ "${test_report_count}" -eq 0 ]; then
-            echo '  <li>No Gradle HTML test reports were found.</li>' >> _site/index.html
-          fi
+          <section>
+            <h2>Javadocs</h2>
+            <ul class="card-grid">
+          HTML
 
-          echo '</ul>' >> _site/index.html
+          find . -type d -path '*/build/docs/javadoc' -print0 |
+          while IFS= read -r -d '' doc_dir; do
+            module="${doc_dir#./}"
+            module="${module%%/build/docs/javadoc}"
+            mkdir -p "_site/javadocs/$module"
+            cp -R "$doc_dir/." "_site/javadocs/$module" || true
 
-          echo '<h2>Javadocs</h2>' >> _site/index.html
-          echo '<ul>' >> _site/index.html
+            cat >> _site/index.html <<HTML
+              <li class="card">
+                <a href="./javadocs/$module/">
+                  <span class="card-title">$module</span>
+                  <span class="card-meta">Public API documentation</span>
+                </a>
+              </li>
+          HTML
+          done
 
-          javadoc_count=0
-          while IFS= read -r -d '' javadoc_dir; do
-            module_path="${javadoc_dir#./}"
-            module_name="${module_path%%/build/docs/javadoc}"
-            target_dir="_site/javadocs/${module_name}"
+          cat >> _site/index.html <<'HTML'
+            </ul>
+          </section>
+          </main>
 
-            mkdir -p "${target_dir}"
-            cp -R "${javadoc_dir}/." "${target_dir}" || true
+          <footer>
+            <p>Generated by GitHub Actions · <time id="ts"></time></p>
+          </footer>
 
-            printf '  <li><a href="./javadocs/%s/">%s</a></li>\n' "${module_name}" "${module_name}" >> _site/index.html
-            javadoc_count=$((javadoc_count + 1))
-          done < <(find . -type d -path '*/build/docs/javadoc' -print0)
-
-          if [ "${javadoc_count}" -eq 0 ]; then
-            echo '  <li>No Javadoc output was found.</li>' >> _site/index.html
-          fi
-
-          echo '</ul>' >> _site/index.html
+          <script>
+            document.getElementById("ts").textContent =
+              new Date().toISOString().replace("T", " ").replace("Z", " UTC");
+          </script>
+          </html>
+          HTML
 
       - name: Upload Pages artifact
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site/
 
-  deploy-pages:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && needs.build-and-test.result == 'success'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deploy
         uses: actions/deploy-pages@v4
