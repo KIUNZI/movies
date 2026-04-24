@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * object during invariant checking.
  *
  * <p>Each violated constraint is captured as a {@link Violation} record and made
- * available via {@link #getViolations()}. The exception message is a comma-separated
+ * available via the {@code violations} field. The exception message is a comma-separated
  * summary of all violations in the form {@code "property message"}.</p>
  *
  * @see uk.co.jasonmarston.movies.domain.validator.InvariantValidation
