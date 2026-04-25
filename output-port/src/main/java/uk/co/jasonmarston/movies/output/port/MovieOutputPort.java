@@ -23,8 +23,6 @@ public interface MovieOutputPort {
      *
      * @param movie the movie aggregate to persist
      * @return a {@link Uni} that emits the persisted aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.PersistenceException
-     *         if persistence fails
      */
     Uni<Movie> createMovie(final Movie movie);
 
@@ -33,8 +31,6 @@ public interface MovieOutputPort {
      *
      * @param readMovieArgs the read arguments containing the target public identifier
      * @return a {@link Uni} that emits the loaded aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
-     *         if no movie exists for the supplied identifier
      */
     Uni<Movie> readMovie(final ReadMovieArgs readMovieArgs);
 
@@ -43,10 +39,6 @@ public interface MovieOutputPort {
      *
      * @param movie the aggregate containing updated values and expected version
      * @return a {@link Uni} that emits the updated aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
-     *         if no movie exists for the supplied identifier
-     * @throws uk.co.jasonmarston.movies.domain.exception.VersionMismatchException
-     *         if optimistic-locking checks fail
      */
     Uni<Movie> updateMovie(final Movie movie);
 
@@ -55,10 +47,6 @@ public interface MovieOutputPort {
      *
      * @param deleteMovieArgs the delete arguments containing the target public identifier
      * @return a {@link Uni} that completes when deletion succeeds
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
-     *         if no movie exists for the supplied identifier
-     * @throws uk.co.jasonmarston.movies.domain.exception.DataIntegrityViolationException
-     *         if the delete operation violates expected row cardinality
      */
     Uni<Void> deleteMovie(final DeleteMovieArgs deleteMovieArgs);
 }
