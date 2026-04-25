@@ -32,7 +32,6 @@ include(
     "domain",
     "input-port",
     "input-adaptor",
-    "lib",
     "movies",
     "output-port",
     "output-adaptor"
