@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
-import uk.co.jasonmarston.movies.domain.validator.InvariantValidation;
+import uk.co.jasonmarston.kiunzi.utility.validator.InvariantValidation;
 
 /**
  * Value object representing the director of a movie.
@@ -54,7 +54,7 @@ public class Director {
      *
      * @param value the raw director name string
      * @return a validated {@code Director} instance
-     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException
      *         if {@code value} is blank or exceeds 254 characters
      */
     public static Director of(final String value) {

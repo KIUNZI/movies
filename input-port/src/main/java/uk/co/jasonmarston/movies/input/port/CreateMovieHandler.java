@@ -20,7 +20,7 @@ public interface CreateMovieHandler {
      *
      * @param createMovieCommand the validated command describing the movie to create
      * @return a {@link Uni} that emits the public identifier of the created movie
-     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException
      *         if the command cannot be converted into a valid movie aggregate
      */
     Uni<PublicId> handle(final CreateMovieCommand createMovieCommand);

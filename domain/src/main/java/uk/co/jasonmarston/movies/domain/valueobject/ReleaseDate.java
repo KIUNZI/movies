@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import lombok.EqualsAndHashCode;
-import uk.co.jasonmarston.movies.domain.validator.InvariantValidation;
+import uk.co.jasonmarston.kiunzi.utility.validator.InvariantValidation;
 
 import java.time.LocalDate;
 
@@ -52,7 +52,7 @@ public class ReleaseDate {
      *
      * @param value the release date; must not be {@code null} and must be in the past
      * @return a validated {@code ReleaseDate} instance
-     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException
      *         if {@code value} is {@code null} or is not in the past
      */
     public static ReleaseDate of(final LocalDate value) {

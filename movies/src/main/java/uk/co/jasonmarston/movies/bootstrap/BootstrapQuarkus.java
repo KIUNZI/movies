@@ -14,7 +14,7 @@ import io.quarkus.runtime.annotations.QuarkusMain;
  */
 @QuarkusMain
 public class BootstrapQuarkus {
-    private BootstrapQuarkus() {
+    BootstrapQuarkus() {
     }
 
     /**

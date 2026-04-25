@@ -20,7 +20,7 @@ public interface ReadMovieHandler {
      *
      * @param readMovieCommand the validated command identifying the movie to read
      * @return a {@link Uni} that emits the resulting movie view
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
      */
     Uni<MovieView> handle(final ReadMovieCommand readMovieCommand);

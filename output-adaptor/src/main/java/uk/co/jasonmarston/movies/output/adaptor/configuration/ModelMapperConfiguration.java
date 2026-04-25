@@ -5,7 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import uk.co.jasonmarston.movies.annotation.PersistenceAwareValidating;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.PersistenceAwareValidating;
 import uk.co.jasonmarston.movies.output.adaptor.data.MovieData;
 /**
  * Internal configuration that customizes ModelMapper behavior for persistence updates.

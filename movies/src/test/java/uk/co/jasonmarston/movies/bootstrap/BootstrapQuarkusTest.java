@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,10 +19,13 @@ class BootstrapQuarkusTest {
     }
 
     @Test
-    void constructorShouldBePrivate() throws Exception {
+    void constructorShouldBePackagePrivate() throws Exception {
         Constructor<BootstrapQuarkus> constructor = BootstrapQuarkus.class.getDeclaredConstructor();
 
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+        int modifiers = constructor.getModifiers();
+        assertFalse(Modifier.isPrivate(modifiers));
+        assertFalse(Modifier.isProtected(modifiers));
+        assertFalse(Modifier.isPublic(modifiers));
 
         constructor.setAccessible(true);
         assertNotNull(constructor.newInstance());
@@ -35,4 +39,3 @@ class BootstrapQuarkusTest {
         assertTrue(Modifier.isStatic(mainMethod.getModifiers()));
     }
 }
-

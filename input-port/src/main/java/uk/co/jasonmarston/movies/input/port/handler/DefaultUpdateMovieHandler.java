@@ -4,10 +4,10 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.modelmapper.ModelMapper;
-import uk.co.jasonmarston.movies.annotation.Validating;
+import uk.co.jasonmarston.kiunzi.utility.domain.exception.VersionMismatchException;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.Validating;
 import uk.co.jasonmarston.movies.domain.aggregate.Movie;
 import uk.co.jasonmarston.movies.domain.arguments.ReadMovieArgs;
-import uk.co.jasonmarston.movies.domain.exception.VersionMismatchException;
 import uk.co.jasonmarston.movies.domain.arguments.UpdateMovieArgs;
 import uk.co.jasonmarston.movies.input.port.command.UpdateMovieCommand;
 import uk.co.jasonmarston.movies.output.port.MovieOutputPort;
@@ -50,9 +50,9 @@ public class DefaultUpdateMovieHandler implements uk.co.jasonmarston.movies.inpu
      * @param updateMovieCommand the validated command containing the target movie,
      *                           expected version, and replacement values
      * @return a {@link Uni} that emits the updated persisted aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
-     * @throws VersionMismatchException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.VersionMismatchException
      *         if the supplied version does not match the persisted version
      */
     @Override

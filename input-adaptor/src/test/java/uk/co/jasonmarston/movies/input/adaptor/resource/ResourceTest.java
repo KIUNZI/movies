@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import uk.co.jasonmarston.kiunzi.utility.exception.mapper.response.ErrorResponse;
 import uk.co.jasonmarston.movies.domain.aggregate.Movie;
 import uk.co.jasonmarston.movies.domain.arguments.CreateMovieArgs;
 import uk.co.jasonmarston.movies.domain.arguments.UpdateMovieArgs;
@@ -17,7 +18,6 @@ import uk.co.jasonmarston.movies.domain.valueobject.ReleaseDate;
 import uk.co.jasonmarston.movies.domain.valueobject.Title;
 import uk.co.jasonmarston.movies.input.adaptor.request.CreateMovieRequest;
 import uk.co.jasonmarston.movies.input.adaptor.request.UpdateMovieRequest;
-import uk.co.jasonmarston.movies.input.adaptor.response.ErrorResponse;
 import uk.co.jasonmarston.movies.input.adaptor.response.MovieResponse;
 import uk.co.jasonmarston.movies.input.port.CreateMovieHandler;
 import uk.co.jasonmarston.movies.input.port.DeleteMovieHandler;
@@ -157,7 +157,7 @@ class ResourceTest {
     private static ModelMapper validatingMapper() {
         try {
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-            Class<?> mapperType = Class.forName("uk.co.jasonmarston.movies.modelmapper.ValidatingModelMapper");
+            Class<?> mapperType = Class.forName("uk.co.jasonmarston.kiunzi.utility.producer.modelmapper.ValidatingModelMapper");
             ModelMapper mapper = (ModelMapper) mapperType
                 .getConstructor(Validator.class)
                 .newInstance(validator);

@@ -19,7 +19,7 @@ public interface MovieRepository {
      *
      * @param movieData the data object to persist
      * @return a {@link Uni} that emits the persisted data object
-     * @throws uk.co.jasonmarston.movies.domain.exception.PersistenceException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.PersistenceException
      *         if persistence fails
      */
     Uni<MovieData> createMovie(final MovieData movieData);
@@ -29,7 +29,7 @@ public interface MovieRepository {
      *
      * @param publicId the public identifier of the movie to load
      * @return a {@link Uni} that emits the loaded data object
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
      */
     Uni<MovieData> readMovie(final PublicId publicId);
@@ -39,9 +39,9 @@ public interface MovieRepository {
      *
      * @param movieData the data object containing updated values
      * @return a {@link Uni} that emits the updated data object
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
-     * @throws uk.co.jasonmarston.movies.domain.exception.VersionMismatchException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.VersionMismatchException
      *         if optimistic-locking version checks fail
      */
     Uni<MovieData> updateMovie(final MovieData movieData);
@@ -51,9 +51,9 @@ public interface MovieRepository {
      *
      * @param publicId the public identifier of the movie to delete
      * @return a {@link Uni} that completes when deletion is successful
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
-     * @throws uk.co.jasonmarston.movies.domain.exception.DataIntegrityViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.DataIntegrityViolationException
      *         if delete results violate expected row cardinality
      */
     Uni<Void> deleteMovie(final PublicId publicId);

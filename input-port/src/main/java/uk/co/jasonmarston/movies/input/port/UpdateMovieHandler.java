@@ -21,9 +21,9 @@ public interface UpdateMovieHandler {
      * @param updateMovieCommand the validated command containing the target movie,
      *                           expected version, and replacement values
      * @return a {@link Uni} that emits the updated movie aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
-     * @throws uk.co.jasonmarston.movies.domain.exception.VersionMismatchException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.VersionMismatchException
      *         if the supplied version does not match the persisted version
      */
     Uni<Movie> handle(final UpdateMovieCommand updateMovieCommand);

@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.modelmapper.ModelMapper;
-import uk.co.jasonmarston.movies.annotation.Validating;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.Validating;
 import uk.co.jasonmarston.movies.input.adaptor.request.CreateMovieRequest;
 import uk.co.jasonmarston.movies.input.port.command.CreateMovieCommand;
 import uk.co.jasonmarston.movies.input.port.CreateMovieHandler;

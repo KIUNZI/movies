@@ -35,6 +35,5 @@ include(
     "lib",
     "movies",
     "output-port",
-    "output-adaptor",
-    "application-wiring"
+    "output-adaptor"
 )

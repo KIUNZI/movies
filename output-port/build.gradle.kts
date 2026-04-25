@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    api(project(":application-wiring"))
+    api(project(":domain"))
     api("io.smallrye.reactive:mutiny")
 }

@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.modelmapper.ModelMapper;
-import uk.co.jasonmarston.movies.annotation.Validating;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.Validating;
 import uk.co.jasonmarston.movies.domain.arguments.ReadMovieArgs;
 import uk.co.jasonmarston.movies.input.port.command.ReadMovieCommand;
 import uk.co.jasonmarston.movies.input.port.view.MovieView;
@@ -46,7 +46,7 @@ public class DefaultReadMovieHandler implements uk.co.jasonmarston.movies.input.
      *
      * @param readMovieCommand the validated command identifying the movie to read
      * @return a {@link Uni} that emits the resulting movie view
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
      */
     @Override

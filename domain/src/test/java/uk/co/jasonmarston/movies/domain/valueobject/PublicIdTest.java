@@ -1,7 +1,7 @@
 package uk.co.jasonmarston.movies.domain.valueobject;
 
 import org.junit.jupiter.api.Test;
-import uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException;
+import uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException;
 
 import java.util.UUID;
 

@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import uk.co.jasonmarston.kiunzi.utility.domain.exception.VersionMismatchException;
 import uk.co.jasonmarston.movies.domain.aggregate.Movie;
 import uk.co.jasonmarston.movies.domain.arguments.CreateMovieArgs;
 import uk.co.jasonmarston.movies.domain.arguments.DeleteMovieArgs;
 import uk.co.jasonmarston.movies.domain.arguments.ReadMovieArgs;
-import uk.co.jasonmarston.movies.domain.exception.VersionMismatchException;
 import uk.co.jasonmarston.movies.domain.valueobject.Director;
 import uk.co.jasonmarston.movies.domain.valueobject.ReleaseDate;
 import uk.co.jasonmarston.movies.domain.valueobject.Title;
@@ -139,7 +139,7 @@ class DefaultUpdateMovieHandlerTest {
     private static ModelMapper validatingMapper() {
         try {
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-            Class<?> mapperType = Class.forName("uk.co.jasonmarston.movies.modelmapper.ValidatingModelMapper");
+            Class<?> mapperType = Class.forName("uk.co.jasonmarston.kiunzi.utility.producer.modelmapper.ValidatingModelMapper");
             ModelMapper mapper = (ModelMapper) mapperType
                 .getConstructor(Validator.class)
                 .newInstance(validator);

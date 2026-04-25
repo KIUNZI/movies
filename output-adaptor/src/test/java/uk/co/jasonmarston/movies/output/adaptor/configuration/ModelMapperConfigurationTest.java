@@ -68,7 +68,7 @@ class ModelMapperConfigurationTest {
     private static ModelMapper persistenceAwareMapper() {
         try {
             Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-            Class<?> mapperType = Class.forName("uk.co.jasonmarston.movies.modelmapper.ValidatingModelMapper");
+            Class<?> mapperType = Class.forName("uk.co.jasonmarston.kiunzi.utility.producer.modelmapper.ValidatingModelMapper");
             ModelMapper mapper = (ModelMapper) mapperType
                 .getConstructor(Validator.class)
                 .newInstance(validator);

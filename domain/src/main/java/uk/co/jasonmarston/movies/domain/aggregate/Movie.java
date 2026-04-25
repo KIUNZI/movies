@@ -3,11 +3,11 @@ package uk.co.jasonmarston.movies.domain.aggregate;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import uk.co.jasonmarston.hexagonal.utility.InvariantValidation;
+import uk.co.jasonmarston.kiunzi.utility.invariant.Invariants;
+import uk.co.jasonmarston.kiunzi.utility.invariant.Preconditions;
+import uk.co.jasonmarston.kiunzi.utility.validator.InvariantValidation;
 import uk.co.jasonmarston.movies.domain.arguments.CreateMovieArgs;
 import uk.co.jasonmarston.movies.domain.arguments.UpdateMovieArgs;
-import uk.co.jasonmarston.movies.domain.validator.Invariants;
-import uk.co.jasonmarston.movies.domain.validator.Preconditions;
 import uk.co.jasonmarston.movies.domain.valueobject.*;
 
 import java.util.UUID;
@@ -80,7 +80,7 @@ public final class Movie {
      *                        must not be {@code null}
      * @return a fully constructed and validated {@code Movie} instance
      * @throws NullPointerException if {@code createMovieArgs} is {@code null}
-     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException
      *         if any domain invariant is violated
      */
     public static Movie create(final CreateMovieArgs createMovieArgs) {

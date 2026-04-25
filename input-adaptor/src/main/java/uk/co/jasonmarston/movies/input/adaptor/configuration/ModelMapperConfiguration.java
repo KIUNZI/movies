@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.modelmapper.ModelMapper;
-import uk.co.jasonmarston.movies.annotation.Validating;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.Validating;
 import uk.co.jasonmarston.movies.domain.valueobject.Director;
 import uk.co.jasonmarston.movies.domain.valueobject.PublicId;
 import uk.co.jasonmarston.movies.domain.valueobject.ReleaseDate;

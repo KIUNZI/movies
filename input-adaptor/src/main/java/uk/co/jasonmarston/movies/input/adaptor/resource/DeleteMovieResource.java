@@ -6,8 +6,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
+import uk.co.jasonmarston.kiunzi.utility.exception.mapper.response.ErrorResponse;
 import uk.co.jasonmarston.movies.domain.valueobject.PublicId;
-import uk.co.jasonmarston.movies.input.adaptor.response.ErrorResponse;
 import uk.co.jasonmarston.movies.input.port.DeleteMovieHandler;
 import uk.co.jasonmarston.movies.input.port.command.DeleteMovieCommand;
 

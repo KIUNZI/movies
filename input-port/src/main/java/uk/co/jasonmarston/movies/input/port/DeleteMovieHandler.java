@@ -18,7 +18,7 @@ public interface DeleteMovieHandler {
      *
      * @param deleteMovieCommand the validated command identifying the movie to delete
      * @return a {@link Uni} that completes when the delete operation finishes
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
      */
     Uni<Void> handle(final DeleteMovieCommand deleteMovieCommand);

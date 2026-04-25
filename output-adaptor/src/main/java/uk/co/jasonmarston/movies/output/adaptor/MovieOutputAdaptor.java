@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.modelmapper.ModelMapper;
-import uk.co.jasonmarston.movies.annotation.PersistenceAwareValidating;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.PersistenceAwareValidating;
 import uk.co.jasonmarston.movies.domain.arguments.DeleteMovieArgs;
 import uk.co.jasonmarston.movies.domain.arguments.ReadMovieArgs;
 import uk.co.jasonmarston.movies.output.adaptor.data.MovieData;
@@ -48,7 +48,7 @@ public class MovieOutputAdaptor implements MovieOutputPort {
      *
      * @param movie the movie aggregate to persist
      * @return a {@link Uni} that emits the persisted movie aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.PersistenceException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.PersistenceException
      *         if persistence fails
      */
     @Override
@@ -63,7 +63,7 @@ public class MovieOutputAdaptor implements MovieOutputPort {
      *
      * @param readMovieArgs the read arguments containing the target public identifier
      * @return a {@link Uni} that emits the loaded movie aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
      */
     @Override
@@ -78,9 +78,9 @@ public class MovieOutputAdaptor implements MovieOutputPort {
      *
      * @param movie the movie aggregate containing updated values and expected version
      * @return a {@link Uni} that emits the updated movie aggregate
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
-     * @throws uk.co.jasonmarston.movies.domain.exception.VersionMismatchException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.VersionMismatchException
      *         if the supplied version does not match persisted state
      */
     @Override
@@ -95,7 +95,7 @@ public class MovieOutputAdaptor implements MovieOutputPort {
      *
      * @param deleteMovieArgs the delete arguments containing the target public identifier
      * @return a {@link Uni} that completes when deletion is successful
-     * @throws uk.co.jasonmarston.movies.domain.exception.NotFoundException
+     * @throws uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException
      *         if no movie exists for the supplied identifier
      */
     @Override

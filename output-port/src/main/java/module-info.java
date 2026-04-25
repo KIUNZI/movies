@@ -8,7 +8,7 @@
  * @see uk.co.jasonmarston.movies.output.port.MovieOutputPort
  */
 module output.port {
-    requires transitive application.wiring;
+    requires transitive domain;
     requires transitive io.smallrye.mutiny;
 
     exports uk.co.jasonmarston.movies.output.port;

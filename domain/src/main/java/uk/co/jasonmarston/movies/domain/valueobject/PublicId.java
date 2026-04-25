@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
-import uk.co.jasonmarston.movies.domain.validator.InvariantValidation;
+import uk.co.jasonmarston.kiunzi.utility.validator.InvariantValidation;
 
 import java.util.UUID;
 
@@ -51,7 +51,7 @@ public class PublicId {
      *
      * @param value the UUID to wrap; must not be {@code null}
      * @return a validated {@code PublicId} instance
-     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException
      *         if {@code value} is {@code null}
      */
     public static PublicId of(final UUID value) {

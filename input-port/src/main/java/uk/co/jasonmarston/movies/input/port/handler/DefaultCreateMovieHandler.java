@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.modelmapper.ModelMapper;
-import uk.co.jasonmarston.movies.annotation.Validating;
+import uk.co.jasonmarston.kiunzi.utility.producer.annotation.Validating;
 import uk.co.jasonmarston.movies.domain.aggregate.Movie;
 import uk.co.jasonmarston.movies.domain.arguments.CreateMovieArgs;
 import uk.co.jasonmarston.movies.domain.valueobject.PublicId;
@@ -48,7 +48,7 @@ public class DefaultCreateMovieHandler implements uk.co.jasonmarston.movies.inpu
      *
      * @param createMovieCommand the validated command describing the movie to create
      * @return a {@link Uni} that emits the public identifier of the persisted movie
-     * @throws uk.co.jasonmarston.movies.domain.exception.DomainInvariantViolationException
+     * @throws uk.co.jasonmarston.kiunzi.utility.validator.DomainInvariantViolationException
      *         if the command cannot be converted into a valid aggregate
      */
     @Override

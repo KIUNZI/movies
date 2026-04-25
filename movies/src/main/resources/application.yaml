@@ -47,5 +47,7 @@ quarkus:
       migrate-at-start: true
       change-log: db/changelog/db.changelog-master.yaml
     oidc:
+      authentication:
+        force-redirect-https-scheme: false
       roles:
         role-claim-path: roles

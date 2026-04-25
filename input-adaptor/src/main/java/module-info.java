@@ -8,10 +8,13 @@
  *
  * @see uk.co.jasonmarston.movies.input.adaptor.resource.CreateMovieResource
  * @see uk.co.jasonmarston.movies.input.adaptor.resource.ReadMovieResource
- * @see uk.co.jasonmarston.movies.input.adaptor.exceptionmapper.DomainExceptionMapper
  */
 module input.adaptor {
+    requires utility.producer;
+    requires utility.exception.mapper;
+
     requires input.port;
+
     requires io.quarkus.security.api;
     requires io.smallrye.common.constraint;
     requires io.smallrye.mutiny;
