@@ -22,12 +22,6 @@ dependencies {
     implementation(project(":input-adaptor"))
     implementation(project(":output-adaptor"))
 
-    implementation("uk.co.jasonmarston.kiunzi:utility-domain-exception:0.0.0-SNAPSHOT")
-    implementation("uk.co.jasonmarston.kiunzi:utility-validator:0.0.0-SNAPSHOT")
-    implementation("uk.co.jasonmarston.kiunzi:utility-invariant:0.0.0-SNAPSHOT")
-    implementation("uk.co.jasonmarston.kiunzi:utility-producer:0.0.0-SNAPSHOT")
-    implementation("uk.co.jasonmarston.kiunzi:utility-exception-mapper:0.0.0-SNAPSHOT")
-
     implementation("io.quarkus:quarkus-config-yaml")
     implementation("io.quarkus:quarkus-container-image-jib")
     implementation("io.quarkus:quarkus-hibernate-reactive-panache")

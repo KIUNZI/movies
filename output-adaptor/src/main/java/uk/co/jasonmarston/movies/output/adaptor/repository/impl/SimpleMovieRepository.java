@@ -6,6 +6,7 @@ import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.OptimisticLockException;
 import org.modelmapper.ModelMapper;
 import uk.co.jasonmarston.kiunzi.utility.domain.exception.DataIntegrityViolationException;
 import uk.co.jasonmarston.kiunzi.utility.domain.exception.NotFoundException;
@@ -58,14 +59,12 @@ public class SimpleMovieRepository implements
     @Override
     public Uni<MovieData> createMovie(final MovieData movieData) {
         return Panache
-            .withTransaction(() -> persist(movieData)
-                .replaceWith(movieData)
-            )
+            .withTransaction(() -> persist(movieData).replaceWith(movieData))
             .ifNoItem()
             .after(Duration.ofMillis(10000))
             .fail()
             .onFailure()
-            .invoke(t -> logError("createMovie", movieData.getPublicId()))
+            .invoke(t -> logFailure("createMovie", movieData.getPublicId(), t))
             .onFailure()
             .transform(t -> {
                 if (t instanceof RuntimeException re) return re;
@@ -89,7 +88,7 @@ public class SimpleMovieRepository implements
                 .ifNull()
                 .failWith(() -> new NotFoundException("Movie not found"))
                 .onFailure()
-                .invoke(t -> logError("readMovie", publicId))
+                .invoke(t -> logFailure("readMovie", publicId, t))
             );
     }
 
@@ -113,14 +112,22 @@ public class SimpleMovieRepository implements
                 .transform(item -> {
                     if (!item.getVersion().equals(movieData.getVersion())) {
                         throw new VersionMismatchException(
-                                "Movie was modified by another request"
+                            "Movie was modified by another request"
                         );
                     }
                     modelMapper.map(movieData, item);
                     return item;
                 })
+                .onFailure(this::isOptimisticConcurrencyFailure)
+                .transform(t ->
+                    new VersionMismatchException(
+                        "Movie was modified by another request"
+                    )
+                )
                 .onFailure()
-                .invoke(t -> logError("updateMovie", movieData.getPublicId()))
+                .invoke(t ->
+                    logFailure("updateMovie", movieData.getPublicId(), t)
+                )
             );
     }
 
@@ -149,20 +156,41 @@ public class SimpleMovieRepository implements
                     return Uni.createFrom().voidItem();
                 })
                 .onFailure()
-                .invoke(t -> logError("deleteMovie", publicId))
+                .invoke(t -> logFailure("deleteMovie", publicId, t))
             );
     }
 
-    /**
-     * Logs persistence operation failures with operation and identifier context.
-     *
-     * @param op the persistence operation name
-     * @param id the identifier associated with the failed operation
-     */
-    private void logError(
+    @SuppressWarnings("unused")
+    private void logFailure(
             final String op,
-            final Object id
+            final Object id,
+            final Throwable throwable
     ) {
-        Log.error(op + " failed for publicId=" + id);
+        final String message = op + " failed for publicId=" + id
+                + "(" + throwable.getClass().getSimpleName() + ")";
+        switch (throwable) {
+            case NotFoundException nfe -> Log.debug(message);
+            case VersionMismatchException vme -> Log.warn(message);
+            case OptimisticLockException ole -> Log.warn(message);
+            default -> Log.error(message, throwable);
+        }
+    }
+
+    private boolean isOptimisticConcurrencyFailure(final Throwable throwable) {
+        Throwable current = throwable;
+        int depth = 0;
+        while (current != null && depth++ < 32) {
+            if (current instanceof OptimisticLockException) {
+                return true;
+            }
+            final String className = current.getClass().getName();
+            if ("org.hibernate.StaleObjectStateException".equals(className)
+                    || "org.hibernate.StaleStateException".equals(className)
+                    || "org.hibernate.OptimisticLockException".equals(className)) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 }
