@@ -177,20 +177,17 @@ public class SimpleMovieRepository implements
     }
 
     private boolean isOptimisticConcurrencyFailure(final Throwable throwable) {
-        Throwable current = throwable;
-        int depth = 0;
-        while (current != null && depth++ < 32) {
-            if (current instanceof OptimisticLockException) {
-                return true;
-            }
-            final String className = current.getClass().getName();
-            if ("org.hibernate.StaleObjectStateException".equals(className)
-                    || "org.hibernate.StaleStateException".equals(className)
-                    || "org.hibernate.OptimisticLockException".equals(className)) {
-                return true;
-            }
-            current = current.getCause();
-        }
-        return false;
-    }
+        for (Throwable current = throwable; current != null; current = current.getCause()) {
+             if (current instanceof OptimisticLockException) {
+                 return true;
+             }
+             final String className = current.getClass().getName();
+             if ("org.hibernate.StaleObjectStateException".equals(className)
+                     || "org.hibernate.StaleStateException".equals(className)
+                     || "org.hibernate.OptimisticLockException".equals(className)) {
+                 return true;
+             }
+         }
+         return false;
+     }
 }
