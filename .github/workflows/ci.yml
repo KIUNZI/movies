@@ -17,8 +17,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-movies-main
+  cancel-in-progress: false
 
 jobs:
   build-and-test:
