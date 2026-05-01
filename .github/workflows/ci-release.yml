@@ -20,6 +20,8 @@ jobs:
     env:
       ARTIFACTS_REPO_USER: ${{ secrets.ARTIFACTS_REPO_USER }}
       ARTIFACTS_REPO_TOKEN: ${{ secrets.ARTIFACTS_REPO_TOKEN }}
+      QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.REGISTRY_TOKEN }}
+      QUARKUS_CONTAINER_IMAGE_USERNAME: jasonmarstoncouk
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -50,9 +52,6 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build, test, and push container image
-        env:
-          QUARKUS_CONTAINER_IMAGE_PASSWORD: ${{ secrets.REGISTRY_TOKEN }}
-          QUARKUS_CONTAINER_IMAGE_USERNAME: jasonmarstoncouk
         run: ./gradlew --no-daemon clean build -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true
 
       - name: Generate Javadocs
