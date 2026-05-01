@@ -24,7 +24,6 @@ dependencies {
 
     implementation("io.quarkus:quarkus-config-yaml")
     implementation("io.quarkus:quarkus-container-image-jib")
-    implementation("io.quarkus:quarkus-hibernate-reactive-panache")
     implementation("io.quarkus:quarkus-oidc")
     implementation("io.quarkus:quarkus-rest-jackson")
 

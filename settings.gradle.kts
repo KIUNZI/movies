@@ -1,4 +1,11 @@
 pluginManagement {
+    val quarkusPlatformVersion = providers.gradleProperty("version.quarkus.platform")
+        .orNull ?: error("version.quarkus.platform must be set")
+
+    plugins {
+        id("io.quarkus") version quarkusPlatformVersion
+    }
+
     repositories {
         maven {
             fun ProviderFactory.requiredEnv(name: String): Provider<String> {

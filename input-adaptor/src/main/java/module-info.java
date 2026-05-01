@@ -22,5 +22,5 @@ module input.adaptor {
     requires jakarta.validation;
     requires jakarta.ws.rs;
     requires org.modelmapper;
-    requires quarkus.core;
+    requires io.quarkus.core;
 }
