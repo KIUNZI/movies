@@ -1,0 +1,80 @@
+name: Publish Pages
+
+on:
+  workflow_run:
+    workflows:
+      - CI (Release Tag Build)
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-movies-main
+  cancel-in-progress: false
+
+jobs:
+  publish-pages:
+    if: >-
+      ${{
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.repository.full_name == github.repository &&
+        github.event.workflow_run.head_repository.full_name == github.repository
+      }}
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository for Pages assets
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Download reports and docs from triggering CI run
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: reports-and-docs
+          path: _input
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare Pages site
+        run: |
+          rm -rf _site
+          mkdir -p _site/test-report _site/javadocs
+          cp .github/assets/pages/style.css _site/style.css
+          python3 .github/assets/pages/build_page_data.py
+
+      - name: Render index from Mustache template
+        uses: recih/template-render-action@v1
+        with:
+          template-file: .github/assets/pages/index.mustache
+          output-file: _site/index.html
+          engine: mustache
+          vars: _site/page-data.json
+
+      - name: Clean temporary page files
+        run: rm -f _site/page-data.json
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site/
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+
+
+

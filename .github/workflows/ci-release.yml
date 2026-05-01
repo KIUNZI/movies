@@ -1,21 +1,15 @@
-name: CI (Snapshot Build)
+name: CI (Release Tag Build)
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - '.github/**'
-      - '.gitattributes'
-      - '.gitignore'
-  pull_request:
-  workflow_dispatch:
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-movies-main
+  group: ci-movies-release-tags
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +23,14 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
+      - name: Validate tag format
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$ ]]; then
+            echo "Invalid release tag: $TAG"
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -49,3 +51,20 @@ jobs:
 
       - name: Build and test
         run: ./gradlew --no-daemon clean build
+
+      - name: Generate Javadocs
+        run: ./gradlew --no-daemon javadoc
+
+      - name: Publish artifacts
+        run: ./gradlew --no-daemon publish
+
+      - name: Upload reports and docs for Pages
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-and-docs
+          path: |
+            **/build/reports/tests/test/**
+            **/build/docs/javadoc/**
+          if-no-files-found: warn
+

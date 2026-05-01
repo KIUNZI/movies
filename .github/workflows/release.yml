@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows:
+      - CI (Release Tag Build)
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: >-
+      ${{
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.repository.full_name == github.repository &&
+        github.event.workflow_run.head_repository.full_name == github.repository
+      }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Resolve release tag from head SHA
+        id: resolve_tag
+        run: |
+          git fetch --force --tags --no-recurse-submodules
+          TAG="$(git tag --points-at "${{ github.event.workflow_run.head_sha }}" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$' | sort | head -n1 || true)"
+
+          if [[ -z "$TAG" ]]; then
+            echo "No valid release tag found for SHA ${{ github.event.workflow_run.head_sha }}"
+            exit 1
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.resolve_tag.outputs.tag }}"
+
+          if [[ "$TAG" == *"-rc."* ]]; then
+            echo "Creating pre-release for $TAG"
+            gh release create "$TAG" \
+              --prerelease \
+              --generate-notes
+          else
+            echo "Creating stable release for $TAG"
+            gh release create "$TAG" \
+              --latest \
+              --generate-notes
+          fi
+

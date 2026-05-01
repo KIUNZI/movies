@@ -3,6 +3,8 @@ plugins {
     id("uk.co.jasonmarston.project.standards.quarkus-library")
 }
 
+description = "Application-layer input contracts and use-case orchestration for the movies service."
+
 dependencies {
 //    api(project(":application-wiring"))
     api(project(":domain"))

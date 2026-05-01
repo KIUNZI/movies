@@ -7,6 +7,8 @@ plugins {
     id("org.liquibase.gradle") version "3.1.0"
 }
 
+description = "Quarkus application assembly, runtime configuration, and deployment packaging for movies."
+
 buildscript {
     dependencies {
         classpath("org.liquibase:liquibase-core:5.0.2")

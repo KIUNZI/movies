@@ -3,6 +3,8 @@ plugins {
     id("uk.co.jasonmarston.project.standards.quarkus-library")
 }
 
+description = "Persistence adapters implementing output-port contracts with Hibernate Reactive."
+
 dependencies {
     implementation(project(":output-port"))
     implementation("uk.co.jasonmarston.kiunzi:utility-producer:1.0.0")
